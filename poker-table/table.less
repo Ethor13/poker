@@ -1,6 +1,7 @@
 html, body{
 	margin:0;
 	padding:0;
+	background:#4D0000;
 }
 
 .vue-container{
@@ -20,7 +21,7 @@ html, body{
 		font-family:"Houschka Rounded";
 		right:-30px;
 		font-weight:bold;
-		font-size:12px;
+		font-size:15px;
 		color:#96e296;
 		&:after{
 			content:"$";
@@ -55,7 +56,7 @@ html, body{
 		font-family:"Houschka Rounded";
 		right:-30px;
 		font-weight:bold;
-		font-size:12px;
+		font-size:15px;
 		color:#96e296;
 		&:after{
 			content:"$";
@@ -107,14 +108,14 @@ html, body{
 	position:relative;
 	background-color:white;
 	font-family:"Houschka Rounded";
-	&.figures-P, &.figures-C{
+	&.figures-S, &.figures-C{
 		color:#515260;
 	}
 	&.figures-H, &.figures-D{
 		color:#EC6E69;
 	}
 	h1{
-		font-size:10px;
+		font-size:15px;
 		text-align:center;
 		position:absolute;
 		margin:0;
@@ -125,7 +126,7 @@ html, body{
 		&:last-child{
 			bottom:5px;
 			right:5px;
-			transform:rotatez(180deg)
+			// transform:rotatez(180deg)
 		}
 	}
 	.figures{
@@ -141,7 +142,7 @@ html, body{
 	height:20px;
 	background-image:url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/441095/clovers.svg');
 	background-size:40px;
-	&.P{
+	&.S{
 		background-position:0 0;
 	}
 	&.D{
@@ -335,6 +336,10 @@ html, body{
 				transform:rotatez(180deg);
 			}
 		}
+		// my addition
+		&.sitting-out{
+			background-color: grey;
+		}
 	}
 }
 
@@ -345,4 +350,5 @@ html, body{
 	border:none;
 	outline:none;
 	padding:5px 10px;
+	top:0px
 }
