@@ -9,14 +9,14 @@ html, body{
 	height:100vh;
 }
 
-.bank{
+.stack{
 	position:absolute;
 	width:30px;
 	height:30px;
 	top:100px;
 	right:0;
 	z-index:10;
-	.bank-value{
+	.stack-value{
 		position:absolute;
 		font-family:"Houschka Rounded";
 		right:-30px;
@@ -32,7 +32,7 @@ html, body{
 		right:-2px;
 		background-color:crimson;
 	}
-	.v-5{
+	.v-2{
 		top:15px;
 		right:5px;
 		background-color:goldenrod;
@@ -44,14 +44,14 @@ html, body{
 	}
 }
 
-.mise{
+.bet{
 	position:absolute;
 	top:170px;
 	left:50%;
 	transform:translatex(-50%);
 	height:40px;
 	width:60px;
-	.mise-value{
+	.bet-value{
 		position:absolute;
 		font-family:"Houschka Rounded";
 		right:-30px;
@@ -62,19 +62,19 @@ html, body{
 			content:"$";
 		}
 	}
-	[class^="jeton-"]{	
+	[class^="chip-"]{	
 		position:absolute;
 	}
-	.jeton-10{
+	.chip-10{
 		top:-2px;
 		left:0px;
 	}
-	.jeton-5{
+	.chip-2{
 		top:-2px;
 		left:22px;
 		background-color:goldenrod;
 	}
-	.jeton-1{
+	.chip-1{
 		top:-2px;
 		right:15px;
 		background-color:#444;
@@ -82,7 +82,7 @@ html, body{
 }
 
 
-.jetons{
+.chips{
 	position:absolute;
 	width:12px;
 	height:12px;
@@ -92,7 +92,7 @@ html, body{
 	&.v-10{
 		background-color:crimson;
 	}
-	&.v-5{
+	&.v-2{
 		background-color:goldenrod;
 	}
 	&.v-1{
@@ -246,7 +246,7 @@ html, body{
 			border-radius:5px;
 			margin-top:15px;
 			text-overflow:ellipsis;
-			font-size:11px;
+			font-size:15px;
 			overflow:hidden;
 			position:relative;
 		}
@@ -275,10 +275,10 @@ html, body{
 			.name{
 				transform:rotatez(180deg);
 			}
-			.bank-value{
+			.stack-value{
 				transform:rotatez(180deg);
 			}
-			.mise-value{
+			.bet-value{
 				transform:rotatez(180deg);
 			}
 		}
@@ -310,10 +310,10 @@ html, body{
 			.name{
 				transform:rotatez(180deg);
 			}
-			.bank-value{
+			.stack-value{
 				transform:rotatez(180deg);
 			}
-			.mise-value{
+			.bet-value{
 				transform:rotatez(180deg);
 			}
 		}
@@ -329,10 +329,10 @@ html, body{
 			.name{
 				transform:rotatez(180deg);
 			}
-			.bank-value{
+			.stack-value{
 				transform:rotatez(180deg);
 			}
-			.mise-value{
+			.bet-value{
 				transform:rotatez(180deg);
 			}
 		}

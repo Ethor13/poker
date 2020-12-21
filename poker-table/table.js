@@ -12,14 +12,14 @@ let app = new Vue({
     data: {
         player_playing: 0,
         players: [
-            { name: 'rivy33', bank: 100, onTable: 77, hasCards: false },
-            { name: 'kattar', color: 'cyan', bank: 100, onTable: 20, hasCards: true },
-            { name: 'mikelaire', color: 'lightcoral', bank: 100, onTable: 20, hasCards: false },
-            { name: 'tomtom', color: 'crimson', bank: 100, onTable: 20, hasCards: true },
-            { name: 'nana', color: '#444', bank: 100, onTable: 20, hasCards: true },
-            { name: 'ionion', color: 'forestgreen', bank: 100, onTable: 20, hasCards: false },
-            { name: 'link6996', color: 'goldenrod', bank: 100, onTable: 20, hasCards: false },
-            { name: 'gossboganon', color: 'gold', bank: 100, onTable: 20, hasCards: false }
+            { name: 'rivy33', stack: 100, onTable: 77, hasCards: false },
+            { name: 'kattar', color: 'cyan', stack: 100, onTable: 23, hasCards: true },
+            { name: 'mikelaire', color: 'lightcoral', stack: 100, onTable: 39, hasCards: false },
+            { name: 'tomtom', color: 'crimson', stack: 100, onTable: 21, hasCards: true },
+            { name: 'nana', color: '#444', stack: 100, onTable: 20, hasCards: true },
+            { name: 'ionion', color: 'forestgreen', stack: 100, onTable: 20, hasCards: false },
+            { name: 'link6996', color: 'goldenrod', stack: 100, onTable: 20, hasCards: false },
+            { name: 'gossboganon', color: 'gold', stack: 100, onTable: 88, hasCards: false }
         ],
         figures: [
             'S',
