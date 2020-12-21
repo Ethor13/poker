@@ -11,42 +11,41 @@ html, body{
 
 .stack{
 	position:absolute;
-	width:30px;
-	height:30px;
-	top:100px;
-	right:0;
+	left: 120px;
+	width:60px;
+	height:16px;
+	top:40px;
 	z-index:10;
 	.stack-value{
 		position:absolute;
 		font-family:"Houschka Rounded";
-		right:-30px;
+		width:60px;
+		height:16px;
+		top: 20px;
+		text-align: center;
 		font-weight:bold;
 		font-size:15px;
 		color:#96e296;
-		&:after{
+		&:before{
 			content:"$";
 		}
 	}
 	.v-10{
-		top:-2px;
-		right:-2px;
 		background-color:crimson;
 	}
 	.v-2{
-		top:15px;
-		right:5px;
+		left:22px;
 		background-color:goldenrod;
 	}
 	.v-1{
-		top:22px;
-		left:-10px;
+		left:44px;
 		background-color:#444;
 	}
 }
 
 .bet{
 	position:absolute;
-	top:170px;
+	top:125px;
 	left:50%;
 	transform:translatex(-50%);
 	height:40px;
@@ -54,11 +53,12 @@ html, body{
 	.bet-value{
 		position:absolute;
 		font-family:"Houschka Rounded";
-		right:-30px;
+		top: -3px;
+		right:-35px;
 		font-weight:bold;
 		font-size:15px;
 		color:#96e296;
-		&:after{
+		&:before{
 			content:"$";
 		}
 	}
@@ -66,17 +66,14 @@ html, body{
 		position:absolute;
 	}
 	.chip-10{
-		top:-2px;
-		left:0px;
+		background-color: red;
 	}
 	.chip-2{
-		top:-2px;
 		left:22px;
 		background-color:goldenrod;
 	}
 	.chip-1{
-		top:-2px;
-		right:15px;
+		left:44px;
 		background-color:#444;
 	}
 }
@@ -126,7 +123,7 @@ html, body{
 		&:last-child{
 			bottom:5px;
 			right:5px;
-			// transform:rotatez(180deg)
+			transform:rotatez(180deg)
 		}
 	}
 	.figures{
@@ -215,140 +212,117 @@ html, body{
 		position:absolute;
 		.avatar{
 			width:120px;
-			height:120px;
-			background-color:lightcoral;
-			border-radius:100%;
-			position:relative;
-			box-shadow: 2px 10px 0px rgba(0, 0, 0, .4);
+			height:40px;
+			border-radius:20px;
 			z-index:20;
-			&:after{
-				content:'';
-				width:70px;
-				height:70px;
-				position:absolute;
-				background-color:rgba(0, 0, 0, .1);
-				top:50%;
-				left:50%;
-				transform:translatex(-50%) translatey(-50%);
-				border-radius:100%;
-				box-shadow:0px 5px 0px rgba(0, 0, 0, .2)
+			font-family:"Courier";
+			letter-spacing: -1px;
+			text-align: center;
+			line-height: 40px;
+			color:white;
+			text-overflow:ellipsis;
+			overflow: hidden;
+			border: 2px solid white;
+		}
+
+		.hand{
+			position:absolute;
+			top:47px;
+			width:120px;
+			height:70px;
+			div{
+				&:first-child{
+					position:absolute;
+					left:8px;
+				}
+				&:last-child{
+					position:absolute;
+					right: 8px;
+				}
 			}
 		}
-		.name{
-			font-family:"Houschka Rounded";
-			text-align:center;
-			width:100px;
-			color:#96e296;
-			padding:5px 0;
-			margin-left:10px;
-			box-sizing:border-box;
-			border:2px solid #96e296;
-			border-radius:5px;
-			margin-top:15px;
-			text-overflow:ellipsis;
-			font-size:15px;
-			overflow:hidden;
-			position:relative;
-		}
-		&.playing:before{
-			content:'...';
-			color:white;
-			font-size:20px;
-			position:absolute;
-			background-color:#76daff;
-			display:inline-block;
-			line-height:0px;
-			height:10px;
-			padding:5px 10px;
-			border-radius:5px;
-			z-index:100;
-		}
+		
 		&.player-1{
-			top:0px;
-			left:50%;
+			top:-9px;
+			left:25%;
 			transform:translatex(-50%) translatey(-50%);
 		}
 		&.player-2{
-			bottom:0px;
+			top:-9px;
 			left:50%;
+			transform:translatex(-50%) translatey(-50%);
+		}
+		&.player-3{
+			top:-9px;
+			left:75%;
+			transform:translatex(-50%) translatey(-50%);
+		}
+		&.player-4{
+			top:50%;
+			right:-9px;	
+			transform:translatex(50%) translatey(-50%) rotatez(90deg);
+		}
+		&.player-5{
+			bottom:-9px;
+			left:75%;
 			transform:translatex(-50%) translatey(50%) rotatez(180deg);
-			.name{
-				transform:rotatez(180deg);
-			}
 			.stack-value{
 				transform:rotatez(180deg);
 			}
 			.bet-value{
 				transform:rotatez(180deg);
 			}
+			.avatar{
+				transform:rotatez(180deg);
+			}
 		}
-		&.player-3{
+		&.player-6{
+			bottom:-9px;
+			left:50%;
+			transform:translatex(-50%) translatey(50%) rotatez(180deg);
+			.stack-value{
+				transform:rotatez(180deg);
+			}
+			.bet-value{
+				transform:rotatez(180deg);
+			}
+			.avatar{
+				transform:rotatez(180deg);
+			}
+		}
+		&.player-7{
+			bottom:-9px;
+			left:25%;
+			transform:translatex(-50%) translatey(50%) rotatez(180deg);
+			.stack-value{
+				transform:rotatez(180deg);
+			}
+			.bet-value{
+				transform:rotatez(180deg);
+			}
+			.avatar{
+				transform:rotatez(180deg);
+			}
+		}
+		&.player-8{
 			top:50%;
-			left:0px;	
+			left:-9px;	
 			transform:translatex(-50%) translatey(-50%) rotatez(-90deg);
 			.name{
 				transform:rotatez(0deg);
 			}
 		}
-		&.player-4{
-			top:50%;
-			right:0px;	
-			transform:translatex(50%) translatey(-50%) rotatez(90deg);
-			.name{
-				transform:rotatez(0deg);
-			}
-		}
-		&.player-5{
-			top:0px;
-			left:25%;
-			transform:translatex(-50%) translatey(-50%);
-		}
-		&.player-6{
-			bottom:0px;
-			left:75%;
-			transform:translatex(-50%) translatey(50%) rotatez(180deg);
-			.name{
-				transform:rotatez(180deg);
-			}
-			.stack-value{
-				transform:rotatez(180deg);
-			}
-			.bet-value{
-				transform:rotatez(180deg);
-			}
-		}
-		&.player-7{
-			top:0px;
-			left:75%;
-			transform:translatex(-50%) translatey(-50%);
-		}
-		&.player-8{
-			bottom:0px;
-			left:25%;
-			transform:translatex(-50%) translatey(50%) rotatez(180deg);
-			.name{
-				transform:rotatez(180deg);
-			}
-			.stack-value{
-				transform:rotatez(180deg);
-			}
-			.bet-value{
-				transform:rotatez(180deg);
-			}
-		}
-		// my addition
-		&.sitting-out{
-			background-color: grey;
-		}
+	}
+	@keyframes blink { 50% { border-color: #ff0000; }  }
+	.playing .avatar{
+		-webkit-animation: blink 1s step-end infinite alternate; 
+		animation: blink 1s step-end infinite alternate; 
 	}
 }
 
-.bouton{
+.refresh{
 	background-color:#515260;
 	color:white;
 	text-transform:uppercase;
-	border:none;
-	outline:none;
 	padding:5px 10px;
-	top:0px
 }

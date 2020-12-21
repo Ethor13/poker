@@ -10,16 +10,16 @@ Vue.component('card', {
 let app = new Vue({
     el: '.vue-container',
     data: {
-        player_playing: 0,
+        player_playing: -1,
         players: [
-            { name: 'rivy33', stack: 100, onTable: 77, hasCards: false },
-            { name: 'kattar', color: 'cyan', stack: 100, onTable: 23, hasCards: true },
-            { name: 'mikelaire', color: 'lightcoral', stack: 100, onTable: 39, hasCards: false },
-            { name: 'tomtom', color: 'crimson', stack: 100, onTable: 21, hasCards: true },
-            { name: 'nana', color: '#444', stack: 100, onTable: 20, hasCards: true },
-            { name: 'ionion', color: 'forestgreen', stack: 100, onTable: 20, hasCards: false },
-            { name: 'link6996', color: 'goldenrod', stack: 100, onTable: 20, hasCards: false },
-            { name: 'gossboganon', color: 'gold', stack: 100, onTable: 88, hasCards: false }
+            { name: 'rivy33', color: '#3D9970', stack: 100, onTable: 77, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'kattar', color: '#0074D9', stack: 100, onTable: 23, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'mikelaire', color: 'lightcoral', stack: 100, onTable: 39, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'tomtom', color: '#001f3f', stack: 100, onTable: 21, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'nana', color: '#39CCCC', stack: 100, onTable: 20, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'ionion', color: '#F012BE', stack: 100, onTable: 20, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'link6996', color: '#FF851B', stack: 100, onTable: 20, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'gossboganon', color: '#FF4136', stack: 100, onTable: 88, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] }
         ],
         figures: [
             'S',
@@ -67,8 +67,6 @@ let app = new Vue({
     }
 })
 
-// My js additions
-
 // turn players grey if they don't have cards
 function updatePlayerColors() {
     for (let i = 1; i <= app.players.length; i++) {
@@ -85,18 +83,20 @@ function updatePlayerColors() {
 
 updatePlayerColors();
 
+// change player color by clicking on their name plate
+function togglePlayer(playerNum) {
+    const player = app.players[playerNum - 1];
+    player.hasCards = !player.hasCards;
+    updatePlayerColors();
+}
+
+// add the on click event listener to each player
 for (let i = 1; i <= app.players.length; i++) {
     const icon = document.querySelector(`.player-${i}`).querySelector('.avatar');
     icon.addEventListener('click', function () { togglePlayer(i) });
 }
 
+// function to refresh the page 
 function refreshPage() {
     location.reload();
-}
-
-function togglePlayer(playerNum) {
-    console.log(`You clicked on player ${playerNum}`);
-    const player = app.players[playerNum - 1];
-    player.hasCards = !player.hasCards;
-    updatePlayerColors();
 }
