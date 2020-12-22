@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <button type="button" class="refresh" onclick="refreshPage()">Refresh</button>
+    <!-- <button type="button" class="refresh" onclick="refreshPage()">Refresh</button> -->
     <div class="vue-container">
         <div class="table">
             <div class="card-place">
@@ -33,6 +33,7 @@
                     <div class="hand" v-if="value.hasCards">
                         <card v-for="(card, index) in value.cards" :card="card"></card>
                     </div>
+                    <div class='dealer' v-if="index === dealer">D</div>
                     <div class="bet">
                         <div class="bet-value">
                             {{ value.onTable }}

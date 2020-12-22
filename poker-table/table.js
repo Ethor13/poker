@@ -10,6 +10,7 @@ Vue.component('card', {
 let app = new Vue({
     el: '.vue-container',
     data: {
+        dealer: 1,
         player_playing: -1,
         players: [
             { name: 'rivy33', color: '#3D9970', stack: 100, onTable: 77, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
