@@ -13,45 +13,54 @@
     <div class="vue-container">
         <div class="table">
             <div class="card-place">
-                <card v-for="(card, index) in five_cards" :card="card"></card>
+                <card v-for="(card, i) in five_cards" :card="card"></card>
             </div>
             <div class="players">
                 <div v-for="(value, index) in players" class="player"
-                    :class="['player-' + (index + 1), {'playing': player_playing === index}]">
+                    :class="['player-' + (index + 1), {'turn': turn === index}]">
                     <div class="stack">
-                        <div class="stack-value">{{ value.stack - value.onTable }}</div>
-                        <div class="chips v-10" v-if="(value.stack - value.onTable) >= 10"></div>
+                        <div class="stack-value">{{ value.stack - value.chipsOnTable }}</div>
+                        <div class="chips v-10" v-if="(value.stack - value.chipsOnTable) >= 10"></div>
                         <div class="chips v-2"
-                            v-if="(value.stack - value.onTable) >= 2 && (value.stack - value.onTable) != 10 && (value.stack - value.onTable) != 11">
+                            v-if="(value.stack - value.chipsOnTable) >= 2 && (value.stack - value.chipsOnTable) != 10 && (value.stack - value.chipsOnTable) != 11">
                         </div>
                         <div class="chips v-1"
-                            v-if="(value.stack - value.onTable) >= 1 && (value.stack - value.onTable) != 2 && (value.stack - value.onTable) != 10 && (value.stack - value.onTable) != 12">
+                            v-if="(value.stack - value.chipsOnTable) >= 1 && (value.stack - value.chipsOnTable) != 2 && (value.stack - value.chipsOnTable) != 10 && (value.stack - value.chipsOnTable) != 12">
                         </div>
                     </div>
-                    <div class="avatar" :style="{backgroundColor: value.color || 'dodgerblue'}">
-                        {{value.name}}</div>
-                    <div class="hand" v-if="value.hasCards">
-                        <card v-for="(card, index) in value.cards" :card="card"></card>
+                    <div class="avatar">{{value.name}}</div>
+                    <div class="hand" v-if="value.is_playing">
+                        <card v-for="(card, i) in value.cards" :card="card" :hidden="!pov[index]"></card>
                     </div>
                     <div class='dealer' v-if="index === dealer">D</div>
                     <div class="bet">
                         <div class="bet-value">
-                            {{ value.onTable }}
+                            {{ value.chipsOnTable }}
                         </div>
                         <div class="chip-10">
-                            <div class="chips v-10" v-for="(n, i) in (value.onTable / 10 | 0)"
-                                :style="{top: (-2 + (i * 5)) + 'px'}" v-if="value.onTable >= 10"></div>
+                            <div class="chips v-10" v-for="(n, i) in (value.chipsOnTable / 10 | 0)"
+                                :style="{top: (-2 + (i * 5)) + 'px'}" v-if="value.chipsOnTable >= 10"></div>
                         </div>
                         <div class="chip-2">
-                            <div class="chips v-2" v-for="(n, i) in ((value.onTable % 10) / 2 | 0)"
-                                :style="{top: (-2 + (i * 5)) + 'px'}" v-if="value.onTable % 10 >= 2">
+                            <div class="chips v-2" v-for="(n, i) in ((value.chipsOnTable % 10) / 2 | 0)"
+                                :style="{top: (-2 + (i * 5)) + 'px'}" v-if="value.chipsOnTable % 10 >= 2">
                             </div>
                         </div>
                         <div class="chip-1">
-                            <div class="chips v-1" style="top: -2px;" v-if="value.onTable % 2"></div>
+                            <div class="chips v-1" style="top: -2px;" v-if="value.chipsOnTable % 2"></div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="decisions">
+            <button id="button-1">Check</button>
+            <button id="button-2">Call</button>
+            <button id="button-3">Bet</button>
+            <div class="bet-sizing">
+                <input class="rs-range" id="rs-range-line" step=1 type="range" value="0" min="0"
+                    :max="players[turn].stack - players[turn].chipsOnTable">
+                <input type="text" id="bet-text" placeholder="Bet Amount">
             </div>
         </div>
     </div>

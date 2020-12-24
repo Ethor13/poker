@@ -1,17 +1,19 @@
 from deck import Deck
 from player import Player
+import json
 
 
 class Table:
 
     # max_players must be greater than 1
-    def __init__(self, max_players, sb, bb):
+    def __init__(self, sb, bb, max_players=8):
         self.max_players = max_players
-        self.players = [None] * max_players
+        self.players = [None] * self.max_players
         self.deck = Deck()
         self.dealer = -1
         self.sb = -1
         self.bb = -1
+        self.turn = -1
         self.blinds = (sb, bb)
         self.board = [None] * 5
         self.pot = 0
@@ -107,6 +109,23 @@ class Table:
         for p in self.get_players():
             if p is not None:
                 p.set_cards([])
+
+    def get_player_json(self):
+        player_list = []
+        for player in self.get_players():
+            p_dict = {name: player.get_name(), stack: player.get_chips(), onTable: player.get_chips_on_table(
+            ), hasCards: player.is_playing(), cards: player.get_cards()}
+            player_list.append(p_dict)
+        return player_list
+
+    def get_player_turn(self):
+        return self.turn
+
+    def set_player_turn(self, i):
+        self.turn = i
+
+    def inc_player_turn(self):
+        self.turn = (self.turn + 1) % self.max_players
 
     def __str__(self):
         return str(self.players)

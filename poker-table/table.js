@@ -1,27 +1,30 @@
 Vue.component('card', {
     template: `<div class="card" :class="['figures-' + card.f, 'values-' + card.v]">
+        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82473/bicycle-card.jpg" class="card-cover" v-if=hidden>
 		<h1>{{card.v}}</h1>
 		<div class="figures" :class="card.f"></div>
 		<h1>{{card.v}}</h1>
 	</div>`,
-    props: ['card']
-})
+    props: ['card', 'hidden']
+});
 
 let app = new Vue({
     el: '.vue-container',
     data: {
+        pov: [true, true, false, true, false, false, false, false],
         dealer: 1,
-        player_playing: -1,
+        turn: 0,
         players: [
-            { name: 'rivy33', color: '#3D9970', stack: 100, onTable: 77, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'kattar', color: '#0074D9', stack: 100, onTable: 23, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'mikelaire', color: 'lightcoral', stack: 100, onTable: 39, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'tomtom', color: '#001f3f', stack: 100, onTable: 21, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'nana', color: '#39CCCC', stack: 100, onTable: 20, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'ionion', color: '#F012BE', stack: 100, onTable: 20, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'link6996', color: '#FF851B', stack: 100, onTable: 20, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'gossboganon', color: '#FF4136', stack: 100, onTable: 88, hasCards: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] }
+            { name: 'rivy33', stack: 100, chipsOnTable: 77, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'kattar', stack: 100, chipsOnTable: 23, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'mikelaire', stack: 100, chipsOnTable: 39, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'tomtom', stack: 100, chipsOnTable: 21, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'nana', stack: 100, chipsOnTable: 20, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'ionion', stack: 100, chipsOnTable: 20, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'link6996', stack: 100, chipsOnTable: 20, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'gossboganon', stack: 100, chipsOnTable: 88, is_playing: false, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] }
         ],
+        colors: ['#3D9970', '#0074D9', 'lightcoral', '#001f3f', '#39CCCC', '#F012BE', '#FF851B', '#FF4136'],
         figures: [
             'S',
             'H',
@@ -66,34 +69,43 @@ let app = new Vue({
             return fives
         }
     }
-})
+});
 
 // turn players grey if they don't have cards
-function updatePlayerColors() {
-    for (let i = 1; i <= app.players.length; i++) {
-        const p = app.players[i - 1];
-        const icon = document.querySelector(`.player-${i}`).querySelector('.avatar');
-        if (p.hasCards) {
-            icon.style.backgroundColor = p.color || 'dodgerblue';
-        }
-        else {
-            icon.style.backgroundColor = 'grey';
-        }
+function updatePlayerColor(i) {
+    const p = app.players[i];
+    const icon = document.querySelector(`.player-${i + 1}`).querySelector('.avatar');
+    if (p.is_playing) {
+        icon.style.backgroundColor = app.colors[i];
+    }
+    else {
+        icon.style.backgroundColor = 'grey';
     }
 }
 
-updatePlayerColors();
+// turn all players avatar colors correctly
+function updatePlayersColors() {
+    for (let i = 0; i < app.players.length; i++) {
+        updatePlayerColor(i);
+    }
+}
 
-// change player color by clicking on their name plate
-function togglePlayer(playerNum) {
-    const player = app.players[playerNum - 1];
-    player.hasCards = !player.hasCards;
-    updatePlayerColors();
+// initialize avatar colors
+updatePlayersColors();
+
+// change player color by clicking on their name plate and rebind event listeners
+function togglePlayer(i) {
+    const player = app.players[i];
+    player.is_playing = !player.is_playing;
+    updatePlayerColor(i);
+    app.$nextTick(function () {
+        addflipCardsListener(i);
+    })
 }
 
 // add the on click event listener to each player
-for (let i = 1; i <= app.players.length; i++) {
-    const icon = document.querySelector(`.player-${i}`).querySelector('.avatar');
+for (let i = 0; i < app.players.length; i++) {
+    const icon = document.querySelector(`.player-${i + 1}`).querySelector('.avatar');
     icon.addEventListener('click', function () { togglePlayer(i) });
 }
 
@@ -101,3 +113,47 @@ for (let i = 1; i <= app.players.length; i++) {
 function refreshPage() {
     location.reload();
 }
+
+// draggable slider
+var rangeSlider = document.getElementById("rs-range-line");
+// input text
+var betText = document.getElementById("bet-text");
+
+rangeSlider.addEventListener("input", updateTextBox, false);
+betText.addEventListener("input", updateRangeSlider, false);
+
+// update text box to match slider
+function updateTextBox() {
+    betText.value = rangeSlider.value;
+}
+
+// update range slider to match text box
+function updateRangeSlider() {
+    rangeSlider.value = betText.value;
+    if (betText.value === "") {
+        rangeSlider.value = 0;
+    }
+}
+
+// hide cards for player i
+function flipCards(i) {
+    app.$set(app.pov, i, !app.pov[i]);
+}
+
+// add flip cards event listener for player i 
+function addflipCardsListener(i) {
+    const playerHand = document.querySelectorAll(`.player-${i + 1} .card`);
+    for (card of playerHand) {
+        card.addEventListener("click", function () { flipCards(i) });
+    }
+}
+
+// add flip cards event listener for all players
+function addflipCardsListeners() {
+    for (let i = 0; i < app.players.length; i++) {
+        addflipCardsListener(i);
+    }
+}
+
+// initialize all flip cards event listeners
+addflipCardsListeners()

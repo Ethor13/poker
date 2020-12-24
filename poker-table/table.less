@@ -132,6 +132,13 @@ html, body{
 		left:50%;
 		transform:translateX(-50%) translateY(-50%);
 	}
+	
+	.card-cover{
+		position: absolute;
+		max-width: 100%;
+		border-radius:5px;
+		z-index:21;
+	}
 }
 
 .figures{
@@ -227,7 +234,7 @@ html, body{
 
 		.hand{
 			position:absolute;
-			top:47px;
+			top:48px;
 			width:120px;
 			height:70px;
 			div{
@@ -329,11 +336,11 @@ html, body{
 			}
 		}
 	}
-	@keyframes blink { 50% { border-color: #ff0000; }  }
-	.playing .avatar{
-		-webkit-animation: blink 1s step-end infinite alternate; 
-		animation: blink 1s step-end infinite alternate; 
-	}
+	// @keyframes blink { 50% { border-color: #ff0000; }  }
+	// .turn .avatar{
+	// 	-webkit-animation: blink 1s step-end infinite alternate; 
+	// 	animation: blink 1s step-end infinite alternate; 
+	// }
 }
 
 .refresh{
@@ -341,4 +348,96 @@ html, body{
 	color:white;
 	text-transform:uppercase;
 	padding:5px 10px;
+}
+
+.decisions{
+	height: 17vw;
+	width: 10vw;
+	color: white;
+	position: absolute;
+	bottom:25px;
+	right:0;
+	margin-right: 3vw;
+	button{
+		height: 5vw;
+		width: 10vw;
+		border-radius: 25px;
+		padding:0;
+		margin:0;
+		color: black;
+		background-color: white;
+		font-size: 40px;
+		font-family:'Courier New', Courier, monospace;
+		border:2px solid white;
+		outline: none;
+		background-color: black;
+		color:white;
+		&:hover{
+			background-color: #4aad4a;
+			transition-duration: 0.5s;
+		}
+	}
+	#button-1{
+		position:absolute;
+		bottom:0;
+	}
+	#button-2{
+		position:absolute;
+		top: 50%;
+		transform: translateY(-50%)	
+	}
+	#button-3{
+		position:absolute;
+		top:0;
+	}
+
+	.bet-sizing{
+		position: relative;
+		top: -35px;
+		.rs-range {
+			width: 10vw;
+			-webkit-appearance: none;
+		}
+		
+		.rs-range:focus {
+			outline: none;
+		}
+		
+		.rs-range::-webkit-slider-runnable-track {
+			height: 2px;
+			cursor: pointer;
+			background: white;
+		}
+		
+		.rs-range::-webkit-slider-thumb {
+			height: 32px;
+			width: 16px;
+			border-radius: 8px;
+			background: black;
+			border: 2px solid white;
+			cursor: pointer;
+			-webkit-appearance: none;
+			margin-top: -16px;
+		}
+		
+		#bet-text{
+			position: relative;
+			width: 150px;
+			height: 25px;
+			left: 50%;
+			transform: translateX(-50%);
+			top: -60px;
+			text-align: center;
+			border-radius: 10px;
+			outline: none;
+			box-shadow: none;
+			border: 0px solid;
+			font-family:'Courier New', Courier, monospace;
+			font-size: 20px;
+			background-color: black;
+			color: white;
+			border: 2px solid white;
+			line-height: 25px;
+		}
+	}
 }
