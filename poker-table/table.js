@@ -1,10 +1,12 @@
 Vue.component('card', {
-    template: `<div class="card" :class="['figures-' + card.f, 'values-' + card.v]">
-        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82473/bicycle-card.jpg" class="card-cover" v-if=hidden>
+    template: `<div class="card" :class="['figures-' + card.f, 'values-' + card.v]" v-if=!hidden>
 		<h1>{{card.v}}</h1>
 		<div class="figures" :class="card.f"></div>
 		<h1>{{card.v}}</h1>
-	</div>`,
+    </div>
+    <div class="card" v-else>
+        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82473/bicycle-card.jpg" class="card-cover">
+    </div>`,
     props: ['card', 'hidden']
 });
 
@@ -16,7 +18,7 @@ let app = new Vue({
         turn: 0,
         players: [
             { name: 'rivy33', stack: 100, chipsOnTable: 77, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'kattar', stack: 100, chipsOnTable: 23, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'kattar', stack: 100, chipsOnTable: 0, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'mikelaire', stack: 100, chipsOnTable: 39, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'tomtom', stack: 100, chipsOnTable: 21, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'nana', stack: 100, chipsOnTable: 20, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
