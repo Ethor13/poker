@@ -27,9 +27,6 @@ html, body{
 		font-weight:bold;
 		font-size:15px;
 		color:#96e296;
-		&:before{
-			content:"$";
-		}
 	}
 	.v-10{
 		background-color:crimson;
@@ -59,9 +56,6 @@ html, body{
 		font-weight:bold;
 		font-size:15px;
 		color:#96e296;
-		&:before{
-			content:"$";
-		}
 	}
 	[class^="chip-"]{	
 		position:absolute;
@@ -209,6 +203,22 @@ html, body{
 			margin-right:15px;
 		}
 	}
+
+	.pot {
+		font-family: "Houschka Rounded";
+		// font-weight:bold;
+		font-size:18px;
+		color:#96e296;
+		height:20px;
+		width:340px;
+		position:absolute;
+		padding:10px;
+		top:30%;
+		left:50%;
+		transform:translateX(-50%);
+		display: flex;
+		justify-content: space-between;
+	}
 }
 
 .players{
@@ -231,6 +241,9 @@ html, body{
 			text-overflow:ellipsis;
 			overflow: hidden;
 			border: 2px solid white;
+			&:hover{
+				cursor: pointer;
+			}
 		}
 
 		.hand{
@@ -239,6 +252,9 @@ html, body{
 			width:120px;
 			height:70px;
 			div{
+				&:hover{
+					cursor: pointer;
+				}
 				&:first-child{
 					position:absolute;
 					left:8px;
@@ -351,33 +367,38 @@ html, body{
 	padding:5px 10px;
 }
 
+@button-color: black;
+
 .decisions{
 	height: 17vw;
 	width: 10vw;
 	color: white;
 	position: absolute;
-	bottom:25px;
+	bottom:0;
 	right:0;
-	margin-right: 3vw;
+	margin-bottom:50px;
+	margin-right: 50px;
 	button{
 		height: 5vw;
 		width: 10vw;
 		border-radius: 25px;
 		padding:0;
 		margin:0;
-		color: black;
-		background-color: white;
 		font-size: 40px;
 		font-family:'Courier New', Courier, monospace;
 		border:2px solid white;
+		background-color: @button-color;
 		outline: none;
-		background-color: black;
 		color:white;
 		&:hover{
-			background-color: #4aad4a;
-			transition-duration: 0.5s;
+			cursor: pointer;
+		}
+		&:active{
+			background-color: darken(@button-color, 10%);
 		}
 	}
+
+
 	#button-1{
 		position:absolute;
 		bottom:0;
@@ -414,7 +435,7 @@ html, body{
 			height: 32px;
 			width: 16px;
 			border-radius: 8px;
-			background: black;
+			background-color: @button-color;
 			border: 2px solid white;
 			cursor: pointer;
 			-webkit-appearance: none;
@@ -435,10 +456,35 @@ html, body{
 			border: 0px solid;
 			font-family:'Courier New', Courier, monospace;
 			font-size: 20px;
-			background-color: black;
+			background-color: @button-color;
 			color: white;
 			border: 2px solid white;
 			line-height: 25px;
+			&::-webkit-outer-spin-button,
+			&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+			}
 		}
+	}
+}
+
+.game-info{
+	.blinds{
+		position: absolute;
+		top:0;
+		right:0;
+		margin-top: 50px;
+		margin-right: 50px;
+		font-size: 30px;
+		font-family:'Courier New', Courier, monospace;
+		height: 3vw;
+		line-height: 3vw;
+		width: 10vw;
+		color:white;
+		text-align: center;
+		background-color: black;
+		border:2px solid white;
+		border-radius: 25px;
 	}
 }

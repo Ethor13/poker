@@ -14,15 +14,17 @@ let app = new Vue({
     el: '.vue-container',
     data: {
         pov: [true, true, false, true, false, false, false, false],
+        blinds: [1, 2],
+        pot: 50000,
         dealer: 1,
         turn: 0,
         players: [
             { name: 'rivy33', stack: 100, chipsOnTable: 77, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'kattar', stack: 100, chipsOnTable: 0, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'kattar', stack: 100, chipsOnTable: 99, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'mikelaire', stack: 100, chipsOnTable: 39, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'tomtom', stack: 100, chipsOnTable: 21, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'nana', stack: 100, chipsOnTable: 20, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
-            { name: 'ionion', stack: 100, chipsOnTable: 20, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
+            { name: 'ionion', stack: 100, chipsOnTable: 99, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'link6996', stack: 100, chipsOnTable: 20, is_playing: true, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] },
             { name: 'gossboganon', stack: 100, chipsOnTable: 88, is_playing: false, cards: [{ f: 'S', v: 'A' }, { f: 'C', v: 'A' }] }
         ],
@@ -69,6 +71,25 @@ let app = new Vue({
                 fives.push(this.cards[rand_id])
             }
             return fives
+        },
+        onTable() {
+            let sum = 0;
+            for (let i = 0; i < this.players.length; i++) {
+                sum += this.players[i].chipsOnTable
+            }
+            return sum
+        },
+        buttons() {
+            return document.querySelector('.decisions').querySelectorAll('button')
+        }
+    },
+    watch: {
+        turn: function (newTurn, oldTurn) {
+            less.modifyVars({
+                '@button-color': this.colors[newTurn]
+            });
+            betText.value = 0;
+            rangeSlider.value = 0;
         }
     }
 });
@@ -123,6 +144,8 @@ var betText = document.getElementById("bet-text");
 
 rangeSlider.addEventListener("input", updateTextBox, false);
 betText.addEventListener("input", updateRangeSlider, false);
+betText.addEventListener("input", limitInputAmt, false);
+betText.addEventListener("input", stripLeadingZeros, false);
 
 // update text box to match slider
 function updateTextBox() {
@@ -135,6 +158,20 @@ function updateRangeSlider() {
     if (betText.value === "") {
         rangeSlider.value = 0;
     }
+}
+
+function limitInputAmt() {
+    const max_bet = app.players[app.turn].stack - app.players[app.turn].chipsOnTable;
+    if (betText.value > max_bet) {
+        betText.value = max_bet;
+        betText.style.borderColor = 'red';
+        betText.style.color = 'red';
+        setTimeout(() => { betText.style.borderColor = 'white'; betText.style.color = 'white'; }, 300);
+    }
+}
+
+function stripLeadingZeros() {
+    betText.value = +betText.value;
 }
 
 // hide cards for player i
@@ -159,3 +196,11 @@ function addflipCardsListeners() {
 
 // initialize all flip cards event listeners
 addflipCardsListeners()
+
+function changeButtonColors() {
+    less.modifyVars({
+        '@button-color': app.colors[app.turn]
+    });
+}
+
+changeButtonColors()
