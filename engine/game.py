@@ -1,5 +1,6 @@
 from table import Table
-from engine import Engine
+from evaluator import Evaluator
+from card import Card
 
 
 class Game:
@@ -7,258 +8,194 @@ class Game:
     def __init__(self, table):
         self.table = table
 
-    def has_min_players(self, minimum=2):
-        if self.table.get_num_players() < minimum:
+    def has_min_players(self):
+        '''
+            Assumes that set_preflop_action_order has already been called
+        '''
+        if len(self.table.action_order) < 2:
             raise Exception("Not enough players")
 
     def move_buttons(self):
-        dealer_index = (self.table.get_dealer() + 1) % self.table.max_players
-        while self.table.get_player(dealer_index) is None or self.table.get_player_chips(dealer_index) == 0:
-            dealer_index = (dealer_index + 1) % self.table.max_players
-        self.table.set_dealer(dealer_index)
+        '''
+            Assumes that has_min_players has already been called
+        '''
+        self.table.bb = self.table.action_order[-1]
+        self.table.sb = self.table.action_order[-2]
 
-        sb_index = (self.table.get_dealer() + 1) % self.table.max_players
-        while self.table.get_player(sb_index) is None or self.table.get_player_chips(sb_index) == 0:
-            sb_index = (sb_index + 1) % self.table.max_players
-        self.table.set_sb(sb_index)
-
-        bb_index = (self.table.get_sb() + 1) % self.table.max_players
-        while self.table.get_player(bb_index) is None or self.table.get_player_chips(bb_index) == 0:
-            bb_index = (bb_index + 1) % self.table.max_players
-        self.table.set_bb(bb_index)
+        if len(self.table.action_order) == 2:
+            self.table.dealer = self.table.action_order[-1]
+        else:
+            self.table.dealer = self.table.action_order[-3]
 
     def deal(self):
-        for _ in range(2):
-            for p in self.table.get_players():
-                if p is not None and p.get_chips() > 0:
-                    p.add_card(self.table.deck.deal_card())
-
-    def preflop(self):
-        involved = [False if p is None or p.get_chips(
-        ) == 0 else True for p in self.table.get_players()]
-
-        commitment = [0] * self.table.max_players
-        sb_amt = min(self.table.get_blinds()[
-                     0], self.table.get_player_chips(self.table.get_sb()))
-        commitment[self.table.get_sb()] = sb_amt
-        self.table.get_player(self.table.get_sb()).subtract_chips(sb_amt)
-        bb_amt = min(self.table.get_blinds()[
-                     1], self.table.get_player_chips(self.table.get_bb()))
-        commitment[self.table.get_bb()] = bb_amt
-        self.table.get_player(self.table.get_bb()).subtract_chips(bb_amt)
-
-        # Under the Gun
-        action = (self.table.get_bb() + 1) % self.table.max_players
-        # Big Blind
-        last_to_act = self.table.get_bb()
-        to_play = self.table.get_blinds()[1]
-
-        return self.round_of_action(involved, commitment, action, last_to_act, to_play)
+        for seat in self.table.action_order:
+            self.table.players[seat].cards = self.table.deck.draw(2)
 
     def deal_flop(self):
-        for i in range(3):
-            self.table.set_board_card(i, self.table.deck.deal_card())
-        print(self.table.get_board())
+        self.table.board = self.table.deck.draw(3)
+        Card.print_pretty_cards(self.table.board)
 
     def deal_turn(self):
-        self.table.set_board_card(3, self.table.deck.deal_card())
-        print(self.table.get_board())
+        self.table.board.append(self.table.deck.draw())
+        Card.print_pretty_cards(self.table.board)
 
     def deal_river(self):
-        self.table.set_board_card(4, self.table.deck.deal_card())
-        print(self.table.get_board())
+        self.table.board.append(self.table.deck.draw())
+        Card.print_pretty_cards(self.table.board)
 
-    def post_flop(self, involved):
-        commitment = [0] * self.table.max_players
-        # Left of Dealer
-        action = (self.table.get_dealer() + 1) % self.table.max_players
-        # Big Blind
-        last_to_act = self.table.get_dealer()
-        to_play = 0
+    def preflop(self):
+        '''
+            Assumes set_preflop_action_order has already been called
+        '''
+        p_sb = self.table.players[self.table.sb]
+        p_bb = self.table.players[self.table.bb]
+        sb_amt_adj = min(self.table.blinds[0], p_sb.stack)
+        bb_amt_adj = min(self.table.blinds[1], p_bb.stack)
+        p_sb.put_in_chips(sb_amt_adj)
+        p_bb.put_in_chips(bb_amt_adj)
+        self.table.pot += sb_amt_adj + bb_amt_adj
 
-        return self.round_of_action(involved, commitment, action, last_to_act, to_play)
+        to_go = self.table.blinds[1]
 
-    def round_of_action(self, involved, commitment, action, last_to_act, to_play):
-        count = 0
-        for p in self.table.get_players():
-            if p is not None and p.get_chips() > 0:
-                count += 1
-        if count < 2:
-            return involved, commitment
+        self.round_of_action(to_go)
 
-        completed = False
-        while not completed:
-            if involved[action]:
-                action_chips = self.table.get_player(action).get_chips()
-                if action_chips > 0:
-                    flag = True
-                    while flag:
-                        print(
-                            f"It's {self.table.get_player(action).get_name()}'s turn")
-                        print(
-                            f"Your cards are {self.table.get_player(action).get_cards()}")
-                        print(
-                            f"It costs {to_play} to play. You would need to put in {to_play - commitment[action]} in the pot. What do you want to do?")
-                        response = input()
-                        print()
+    def post_flop(self):
+        '''
+            Assumes set_postflop_action_order has already been called
+        '''
+        to_go = 0
 
-                        if commitment[action] < to_play:
-                            if response == 'fold':
-                                involved[action] = False
-                                flag = False
+        self.round_of_action(to_go)
 
-                            elif response == 'call':
-                                to_call = to_play - commitment[action]
-                                if action_chips < to_call:
-                                    self.table.get_player(
-                                        action).subtract_chips(action_chips)
-                                    commitment[action] += action_chips
-                                else:
-                                    self.table.get_player(
-                                        action).subtract_chips(to_call)
-                                    commitment[action] = to_play
-                                flag = False
+    def round_of_action(self, to_go):
+        action_index = 0
 
-                        elif commitment[action] == to_play and response == 'check':
-                            flag = False
+        while action_index < len(self.table.action_order):
+            if self.table.active_players() < 2:
+                break
+            action_seat = self.table.action_order[action_index]
+            action_player = self.table.players[action_seat]
+            Card.print_pretty_cards(action_player.cards)
+            if action_player.stack > 0:
+                action = input("Enter an action: ")
+                print()
+                if action == 'call':
+                    call_amt = to_go - action_player.chipsOnTable
+                    action_player.put_in_chips(call_amt)
+                    self.table.pot += call_amt
+                elif action[:5] == 'raise':
+                    raise_amt = int(action[6:])
+                    net_amt = raise_amt - action_player.chipsOnTable
+                    action_player.put_in_chips(net_amt)
+                    self.table.pot += net_amt
+                    to_go = raise_amt
+                    self.table.adjust_action_order(seat)
+                    action_index = -1
+                elif action == 'fold':
+                    self.table.action_order.remove(action_seat)
+                    action_player.next_round()
+                    action_index -= 1
+            action_index += 1
 
-                        if response[:9] == 'raise to ':
-                            try:
-                                raise_amt = int(response[9:])
-                            except ValueError:
-                                print("Invalid Raise Amount")
-                            if raise_amt > (action_chips + commitment[action]) or raise_amt < (2 * to_play):
-                                print("Invalid Raise Amount")
-                            else:
-                                self.table.get_player(
-                                    action).subtract_chips(raise_amt - commitment[action])
-                                commitment[action] = raise_amt
-                                to_play = raise_amt
-                                last_to_act = (
-                                    action - 1) % self.table.max_players
-                                flag = False
+        for seat in self.table.action_order:
+            self.table.players[seat].next_round()
 
-                        if flag:
-                            print("Invalid Input")
+    def winner_index(self):
+        if len(self.table.action_order) == 1:
+            return self.table.action_order[0]
+        return None
 
-            if action == last_to_act:
-                completed = True
-            action = (action + 1) % self.table.max_players
+    def winner_order(self):
+        board = self.table.board
+        values = {}
+        myEvaluator = Evaluator()
+        for i, seat in enumerate(self.table.action_order):
+            p = self.table.players[seat]
+            hand_strength = myEvaluator.evaluate(p.cards, board)
+            values.setdefault(hand_strength, []).append(p)
 
-        return involved, commitment
+        keys = sorted(list(values.keys()))
 
-    def winner_index(involved):
-        count = 0
-        for b in involved:
-            if b == True:
-                count += 1
-        if count == 0:
-            raise Exception("No Players left in the hand")
-        if count == 1:
-            return commitment.index(True)
-        if count > 1:
-            return None
-
-    def sort_player_hands(hands):
-        hands_alt = list(
-            map(lambda x: (list(map(lambda y: y[0], x[0])), x[1]), hands))
-        hands_alt.sort(key=lambda x: x[0])
         player_ordering = []
-        while len(hands_alt) > 0:
-            h = hands_alt[0][0]
-            last_match = 0
-            while last_match + 1 < len(hands_alt) and h == hands_alt[last_match + 1][0]:
-                last_match += 1
-            players = list(map(lambda x: x[1], hands_alt[:last_match + 1]))
-            player_ordering.append(players)
-            del hands_alt[:last_match+1]
+        for key in keys:
+            player_ordering.append(values[key])
+
         return player_ordering
 
-    def winner_order(self, involved):
-        board = self.table.get_board()
-        hands = []
-        for i, p in enumerate(self.table.get_players()):
-            if involved[i]:
-                hand_strength, hand = Engine.eval_hand(board + p.get_cards())
-                hands.append((hand_strength, hand, p))
+    def distribute_pot(self, winners):
+        '''
+            Assumes that all chips in play have been committed
+        '''
+        total_commitments = [
+            p.committed if p is not None else 0 for p in self.table.players]
 
-        # an entry in hand_ordering[i] has a hand_strength of i
-        hand_ordering = [[] for _ in range(11)]
-        for h in hands:
-            hand_ordering[h[0]].append(h[1:])
-
-        # orders the players hands from least to greatest showdown value
-        player_ordering = []
-        for h in hand_ordering:
-            player_ordering += Game.sort_player_hands(h)
-
-        # returns the ordering of players from greatest to least hand value
-        player_ordering.reverse()
-        return player_ordering
-
-    def distribute_pot(self, winners, total_commitments):
-        print("total commitments:", total_commitments)
         for w in winners:
             num_tied = len(w)
-            player_commitments = [
-                (total_commitments[self.table.get_player_seat(p)], p) for p in w]
-            player_commitments.sort(key=lambda x: x[0])
-            for i, (_, p) in enumerate(player_commitments):
+            w.sort(key=lambda x: x.committed)
+            for i, p in enumerate(w):
                 for j in range(len(total_commitments)):
-                    split = min(total_commitments[j], total_commitments[self.table.get_player_seat(
-                        p)]) / (num_tied - i)
-                    p.add_chips(split)
+                    split = int(min(total_commitments[j], total_commitments[self.table.players.index(
+                        p)]) / (num_tied - i))
+                    p.stack += split
                     total_commitments[j] -= split
+
             if sum(total_commitments) == 0:
                 break
-        if sum(total_commitments) != 0:
-            raise Exception("Pot was distributed incorrectly")
+
+        assert sum(total_commitments) == 0, "Pot was distributed incorrectly"
+
+        for p in self.table.players:
+            if p is not None:
+                p.committed = 0
 
     def play_hand(self):
+        self.table.set_preflop_action_order()
         self.has_min_players()
         self.move_buttons()
-        self.table.reset_board()
         self.table.deck.shuffle()
-        self.table.set_pot(0)
         self.deal()
-        involved_pre, commitment_pre = self.preflop()
-        self.table.add_to_pot(sum(commitment_pre))
-        w_pre = Game.winner_index(involved_pre)
-        if w_pre is None:
+        self.preflop()
+
+        while True:
+            # preflop winner
+            w_pre = self.winner_index()
+            if w_pre is not None:
+                self.distribute_pot([[self.table.players[w_pre]]])
+                break
+
             self.deal_flop()
-            involved_post, commitment_post = self.post_flop(involved_pre)
-            self.table.add_to_pot(sum(commitment_post))
-            w_post = Game.winner_index(involved_post)
-            if w_post is None:
-                self.deal_turn()
-                involved_turn, commitment_turn = self.post_flop(involved_post)
-                self.table.add_to_pot(sum(commitment_turn))
-                w_turn = Game.winner_index(involved_turn)
-                if w_turn is None:
-                    self.deal_river()
-                    involved_river, commitment_river = self.post_flop(
-                        involved_turn)
-                    self.table.add_to_pot(sum(commitment_river))
-                    w_river = Game.winner_index(involved_river)
-                    if w_river is None:
-                        # evaluate hands at showdown
-                        winners = self.winner_order(involved_river)
-                        total_commitments = list(map(
-                            sum, zip(commitment_pre, commitment_post, commitment_turn, commitment_river)))
-                        self.distribute_pot(winners, total_commitments)
-                    else:
-                        # river winner before showdown
-                        self.table.get_player(w_river).add_chips(
-                            self.table.get_pot())
-                else:
-                    # turn winner
-                    self.table.get_player(w_turn).add_chips(
-                        self.table.get_pot())
-            else:
-                # post flop winner
-                self.table.get_player(w_post).add_chips(self.table.get_pot())
-        else:
-            # pre flop winner
-            self.table.get_player(w_pre).add_chips(self.table.get_pot())
+            self.table.set_postflop_action_order()
+            self.post_flop()
+
+            # postflop winner
+            w_post = self.winner_index()
+            if w_post is not None:
+                self.distribute_pot([[self.table.players[w_post]]])
+                break
+
+            self.deal_turn()
+            self.table.set_postflop_action_order()
+            self.post_flop()
+            # postturn winner
+            w_turn = self.winner_index()
+            if w_turn is not None:
+                self.distribute_pot([[self.table.players[w_turn]]])
+                break
+
+            self.deal_river()
+            self.table.set_postflop_action_order()
+            self.post_flop()
+            # postriver winner
+            w_river = self.winner_index()
+            if w_river is not None:
+                self.distribute_pot([[self.table.players[w_river]]])
+                break
+
+            # showdown winner order
+            winners = self.winner_order()
+            self.distribute_pot(winners)
+            break
 
         self.table.take_player_cards()
+        self.table.board = []
+        self.table.pot = 0

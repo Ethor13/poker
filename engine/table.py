@@ -13,13 +13,13 @@ class Table:
         self.dealer = -1
         self.sb = -1
         self.bb = -1
-        self.turn = -1
         self.blinds = (sb, bb)
-        self.board = [None] * 5
+        self.board = []
         self.pot = 0
+        self.action_order = []
 
     def add_player(self, player, seat=None):
-        if player in self.get_players():
+        if player in self.players:
             raise Exception("Player is already at table")
         if seat != None:
             if self.players[seat] == None:
@@ -40,92 +40,57 @@ class Table:
         except ValueError:
             raise Exception("Player not found")
 
-    def get_players(self):
-        return self.players
-
-    def get_player(self, i):
-        return self.players[i]
-
-    def get_player_chips(self, i):
-        return self.players[i].get_chips()
-
-    # number of players with chips at the table
-    def get_num_players(self):
-        count = 0
-        for p in self.players:
-            if p != None and p.get_chips() > 0:
-                count += 1
-        return count
-
-    def get_dealer(self):
-        return self.dealer
-
-    def set_dealer(self, i):
-        self.dealer = i
-
-    def get_blinds(self):
-        return self.blinds
-
-    def set_blinds(self, sb, bb):
-        self.blinds = (sb, bb)
-
-    def get_sb(self):
-        return self.sb
-
-    def set_sb(self, s):
-        self.sb = s
-
-    def get_bb(self):
-        return self.bb
-
-    def set_bb(self, b):
-        self.bb = b
-
-    def get_board(self):
-        return self.board
-
-    def reset_board(self):
-        self.board = [None] * 5
-
-    def set_board_card(self, i, card):
-        self.board[i] = card
-
-    def get_pot(self):
-        return self.pot
-
-    def set_pot(self, pot):
-        self.pot = pot
-
-    def add_to_pot(self, amt):
-        self.pot += amt
-
-    def get_player_seat(self, player):
-        try:
-            return self.players.index(player)
-        except:
-            raise Exception("Player not found")
-
     def take_player_cards(self):
-        for p in self.get_players():
+        for p in self.players:
             if p is not None:
-                p.set_cards([])
+                p.cards = []
 
     def get_player_json(self):
-        player_list = []
-        for player in self.get_players():
-            p_dict = {name: player.get_name(), stack: player.get_chips(), onTable: player.get_chips_on_table(
-            ), hasCards: player.is_playing(), cards: player.get_cards()}
-            player_list.append(p_dict)
-        return player_list
+        player_list = [None] * self.max_players
+        for i, p in enumerate(self.players):
+            if p is not None:
+                p_dict = {name: p.name, stack: p.stack,  onTable: p.chipsOnTable,
+                          hasCards: i in self.action_order, cards: p.cards}
+                player_list[i] = p_dict
+        return json.dumps(player_list)
 
-    def get_player_turn(self):
-        return self.turn
+    def set_preflop_action_order(self):
+        '''
+            Assumes that buttons haven't been moved yet from previous round
+        '''
+        order = []
+        for i in range(1, self.max_players + 1):
+            seat = (self.bb + i) % self.max_players
+            p = self.players[seat]
+            if p is not None and p.stack > 0:
+                order.append(seat)
+        self.action_order = order
 
-    def set_player_turn(self, i):
-        self.turn = i
+    def set_postflop_action_order(self):
+        '''
+            Uses the last round's action_order to create the next round's action_order
+        '''
+        order = []
+        for i in range(1, self.max_players + 1):
+            seat = (self.dealer + i) % self.max_players
+            if seat in self.action_order:
+                order.append(seat)
+        self.action_order = order
 
-    def inc_player_turn(self):
-        self.turn = (self.turn + 1) % self.max_players
+    def adjust_action_order(self, seat):
+        '''
+            called when player at seat raises and becomes the last to act
+        '''
+        # index of seat in action_order
+        i = self.action_order.index(seat)
+        self.action_order = self.action_order[i+1:] + self.action_order[:i+1]
+
+    def active_players(self):
+        count = 0
+        for seat in self.action_order:
+            if self.players[seat].stack > 0:
+                count += 1
+        return count
 
     def __str__(self):
         return str(self.players)
