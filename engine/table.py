@@ -83,7 +83,7 @@ class Table:
         '''
         # index of seat in action_order
         i = self.action_order.index(seat)
-        self.action_order = self.action_order[i+1:] + self.action_order[:i+1]
+        self.action_order = self.action_order[i:] + self.action_order[:i]
 
     def active_players(self):
         count = 0

@@ -70,31 +70,56 @@ class Game:
     def round_of_action(self, to_go):
         action_index = 0
 
+        # skip while loop if only one person can make a move
+        if self.table.active_players() < 2:
+            action_index = len(self.table.action_order)
+
         while action_index < len(self.table.action_order):
-            if self.table.active_players() < 2:
-                break
             action_seat = self.table.action_order[action_index]
             action_player = self.table.players[action_seat]
-            Card.print_pretty_cards(action_player.cards)
             if action_player.stack > 0:
-                action = input("Enter an action: ")
-                print()
-                if action == 'call':
-                    call_amt = to_go - action_player.chipsOnTable
-                    action_player.put_in_chips(call_amt)
-                    self.table.pot += call_amt
-                elif action[:5] == 'raise':
-                    raise_amt = int(action[6:])
-                    net_amt = raise_amt - action_player.chipsOnTable
-                    action_player.put_in_chips(net_amt)
-                    self.table.pot += net_amt
-                    to_go = raise_amt
-                    self.table.adjust_action_order(seat)
-                    action_index = -1
-                elif action == 'fold':
-                    self.table.action_order.remove(action_seat)
-                    action_player.next_round()
-                    action_index -= 1
+                while True:
+                    print(f"{str(action_player)}'s turn")
+                    Card.print_pretty_cards(action_player.cards)
+                    action = input("Enter an action: ")
+                    print()
+                    if action == 'call':
+                        if to_go > action_player.chipsOnTable:
+                            call_amt = to_go - action_player.chipsOnTable
+                            call_amt_adj = min(call_amt, action_player.stack)
+                            action_player.put_in_chips(call_amt_adj)
+                            self.table.pot += call_amt_adj
+                            break
+                        print("invalid call")
+                    elif action[:5] == 'raise':
+                        try:
+                            raise_amt = int(action[6:])
+                        except:
+                            # make the following if statement always fail
+                            raise_amt = action_player.chipsOnTable + action_player.stack + 1
+                        net_amt = raise_amt - action_player.chipsOnTable
+                        if net_amt <= action_player.stack and self.table.active_players() > 1:
+                            action_player.put_in_chips(net_amt)
+                            self.table.pot += net_amt
+                            to_go = raise_amt
+                            self.table.adjust_action_order(action_seat)
+                            action_index = 0
+                            break
+                        print("invalid raise")
+                    elif action == 'fold':
+                        if to_go > action_player.chipsOnTable:
+                            self.table.action_order.remove(action_seat)
+                            action_player.next_round()
+                            action_index -= 1
+                            break
+                        print("invalid fold")
+                    elif action == 'check':
+                        if to_go == action_player.chipsOnTable:
+                            break
+                        print("invalid check")
+                    else:
+                        print("invaid response")
+
             action_index += 1
 
         for seat in self.table.action_order:
@@ -134,8 +159,8 @@ class Game:
             w.sort(key=lambda x: x.committed)
             for i, p in enumerate(w):
                 for j in range(len(total_commitments)):
-                    split = int(min(total_commitments[j], total_commitments[self.table.players.index(
-                        p)]) / (num_tied - i))
+                    split = int(
+                        min(total_commitments[j], p.committed) / (num_tied - i))
                     p.stack += split
                     total_commitments[j] -= split
 
