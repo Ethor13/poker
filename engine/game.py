@@ -53,7 +53,7 @@ class Game:
         bb_amt_adj = min(self.table.blinds[1], p_bb.stack)
         p_sb.put_in_chips(sb_amt_adj)
         p_bb.put_in_chips(bb_amt_adj)
-        self.table.pot += sb_amt_adj + bb_amt_adj
+        self.table.onTable += sb_amt_adj + bb_amt_adj
 
         to_go = self.table.blinds[1]
 
@@ -74,11 +74,12 @@ class Game:
         if self.table.active_players() < 2:
             action_index = len(self.table.action_order)
 
-        while action_index < len(self.table.action_order):
+        while action_index < len(self.table.action_order) and len(self.table.action_order) > 1:
             action_seat = self.table.action_order[action_index]
             action_player = self.table.players[action_seat]
             if action_player.stack > 0:
                 while True:
+                    self.table.turn = action_seat
                     print(f"{str(action_player)}'s turn")
                     Card.print_pretty_cards(action_player.cards)
                     action = input("Enter an action: ")
@@ -111,6 +112,7 @@ class Game:
                             self.table.action_order.remove(action_seat)
                             action_player.next_round()
                             action_index -= 1
+                            self.table.take_player_cards(action_player)
                             break
                         print("invalid fold")
                     elif action == 'check':
@@ -124,6 +126,9 @@ class Game:
 
         for seat in self.table.action_order:
             self.table.players[seat].next_round()
+
+        self.table.pot = self.table.onTable
+        self.table.onTable = 0
 
     def winner_index(self):
         if len(self.table.action_order) == 1:
@@ -221,6 +226,7 @@ class Game:
             self.distribute_pot(winners)
             break
 
-        self.table.take_player_cards()
+        self.table.take_players_cards()
         self.table.board = []
         self.table.pot = 0
+        self.turn = -1

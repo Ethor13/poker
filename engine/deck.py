@@ -10,13 +10,17 @@ class Deck:
     """
     _FULL_DECK = []
 
-    def __init__(self):
-        self.shuffle()
+    def __init__(self, partial=None):
+        self.shuffle(partial)
 
-    def shuffle(self):
-        # and then shuffle
-        self.cards = Deck.GetFullDeck()
-        shuffle(self.cards)
+    def shuffle(self, partial=None):
+        if partial is None:
+            # and then shuffle
+            self.cards = Deck.GetFullDeck()
+            shuffle(self.cards)
+        else:
+            self.cards = partial
+            shuffle(self.cards)
 
     def draw(self, n=1):
         if n == 1:
@@ -28,7 +32,11 @@ class Deck:
         return cards
 
     def __str__(self):
-        return Card.print_pretty_cards(self.cards)
+        # return Card.print_pretty_cards(self.cards)
+        return str(self.cards)
+
+    def __repr__(self):
+        return str(self.cards)
 
     @staticmethod
     def GetFullDeck():
@@ -40,4 +48,4 @@ class Deck:
             for suit, _ in Card.CHAR_SUIT_TO_INT_SUIT.items():
                 Deck._FULL_DECK.append(Card.new(rank + suit))
 
-        return list(Deck._FULL_DECK)
+        return list(Deck._FULL_DECK)        
