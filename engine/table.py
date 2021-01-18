@@ -106,8 +106,8 @@ class Table:
             Uses the last round's action_order to create the next round's action_order
         '''
         order = []
-        for i in range(self.max_players):
-            seat = (self.sb + i) % self.max_players
+        for i in range(1, self.max_players + 1):
+            seat = (self.dealer + i) % self.max_players
             if seat in self.action_order:
                 order.append(seat)
         self.action_order = order

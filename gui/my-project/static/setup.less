@@ -1,0 +1,87 @@
+.game-info {
+	.blinds {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		input {
+			font-size: 30px;
+			font-family:'Courier New', Courier, monospace;
+			color: white;
+			background: transparent;
+			outline: none;
+			border: none;
+			width: 4vw;
+			&::-webkit-outer-spin-button,
+			&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			}
+		}
+		p {
+			width: 1.5vw;
+		}
+		#small-blind {
+			text-align: right;
+		}
+		#big-blind {
+			text-align: left;
+		}
+	}
+
+	.starting-stack, .dealer, .pov {
+		position: absolute;
+		right:0;
+		margin-top: 50px;
+		margin-right: 50px;
+		font-size: 30px;
+		font-family:'Courier New', Courier, monospace;
+		height: 3vw;
+		line-height: 3vw;
+		width: 10vw;
+		color:white;
+		text-align: center;
+		background-color: black;
+		border:2px solid white;
+		border-radius: 25px;
+		input {
+			text-align: center;
+			font-size: 30px;
+			font-family:'Courier New', Courier, monospace;
+			color: white;
+			background: transparent;
+			outline: none;
+			border: none;
+			width: inherit;
+			&::-webkit-outer-spin-button,
+			&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			}
+		}
+	}
+
+	.starting-stack {
+		top:calc(~"3vw + 20px");
+	}
+
+	.dealer {
+		top:calc(~"6vw + 40px");
+	}
+
+	.pov {
+		top:calc(~"9vw + 60px");
+	}
+}
+
+.start-button {
+	position: absolute;
+	bottom: 0;
+	right:0;
+	margin-bottom: 10px;
+	margin-right: 10px;
+	height: 110px;
+	width: 110px;
+	outline: none;
+	background-image: url('play.svg');
+	background-size: 70px;
+	background-repeat: no-repeat;
+}

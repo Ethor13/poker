@@ -1,0 +1,28 @@
+.hasCards {
+    position:absolute;
+    .faceDown{
+        div {
+            top: 2px;
+            &:hover{
+                cursor: pointer;
+            }
+            &:first-child{
+                position:absolute;
+                left:-8px;
+            }
+            &:last-child{
+                position:absolute;
+                right: -8px;
+            }
+        }
+        
+    }
+}
+
+// .card {
+//     position: absolute;
+// }
+
+.card:hover > .card-grid {
+    display: inline-grid;
+}
